@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lena: Colours and Numbers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--wine:#5C1E2E;--gold:#B8873A;--cream:#FCF8F5;--line:#E8DAD3;--soft:#F7EFEA;--ok:#2E8B57;--okbg:#E3F3E8;--ink:#2d1f23;--mute:#7a6a6a}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0;background:#F0E6E1;font-family:Manrope,system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;cursor:pointer}
+.top{position:sticky;top:0;z-index:5;background:var(--wine);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top));font-weight:800;font-size:17px}
+.top b{background:#fff;color:var(--wine);border-radius:20px;padding:4px 12px}
+.wrap{max-width:720px;margin:0 auto;padding:14px 12px 120px}
+.step{display:none;background:var(--cream);border-radius:28px;padding:20px 18px 24px;box-shadow:0 4px 18px rgba(92,30,46,.12)}
+.step.on{display:block}
+.kick{font-size:14px;letter-spacing:.09em;font-weight:800;color:var(--gold);text-transform:uppercase}
+.hd{display:flex;gap:12px;align-items:center}
+.num{width:46px;height:46px;border-radius:50%;background:var(--wine);color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;flex:none}
+h2{font-family:Lora,Georgia,serif;color:var(--wine);font-size:27px;line-height:1.2;margin:2px 0 0}
+hr{border:0;border-top:2px solid var(--line);margin:16px 0}
+.ins{font-size:19px;color:var(--mute);margin:0 0 16px;line-height:1.45}
+.btn{background:#fff;border:3px solid var(--line);border-radius:22px;min-height:64px;padding:8px 10px;font:800 22px Manrope,sans-serif;color:var(--wine);display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.btn.sel{border-color:var(--gold);background:#FFF6DF}
+.btn.ok{border-color:var(--ok);background:var(--okbg);color:#1b6b3c}
+.btn.no{opacity:.4;background:#eee}
+.btn:disabled{cursor:default}
+.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mcol{display:grid;gap:12px;align-content:start}
+.status{margin-top:16px;background:var(--soft);border-radius:18px;padding:12px 16px;display:flex;justify-content:space-between;gap:10px;color:var(--mute);font-weight:700;font-size:17px}
+.card{background:#fff;border:3px solid var(--line);border-radius:26px;padding:16px;margin-bottom:14px}
+.pics{font-size:30px;line-height:1.5;letter-spacing:6px}
+.q{font:800 24px Manrope,sans-serif;margin:6px 0 12px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts .btn:last-child:nth-child(odd){grid-column:1/-1}
+.opts.four{grid-template-columns:1fr 1fr}
+.opts.four .btn:last-child:nth-child(odd){grid-column:auto}
+.spk{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.spk .go{flex:none}
+.link{background:none;border:0;color:var(--mute);font:700 16px Manrope;text-decoration:underline;padding:8px}
+.go{background:var(--wine);color:#fff;border:0;border-radius:20px;padding:14px 24px;font:800 20px Manrope,sans-serif;min-height:56px}
+.go:disabled{opacity:.4}
+.ghost{background:var(--soft);color:var(--ink);border:3px solid var(--line);border-radius:20px;padding:12px 20px;font:800 20px Manrope,sans-serif;min-height:56px}
+.tray{min-height:68px;border:3px dashed var(--gold);border-radius:22px;background:var(--soft);padding:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.tray.ok{border-color:var(--ok);background:var(--okbg);border-style:solid}
+.tray .ph{color:#9a8a8a;font-size:19px;padding-left:6px}
+.pool{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.word{background:#fff;border:3px solid var(--wine);color:var(--wine);border-radius:20px;padding:10px 20px;font:800 24px Manrope,sans-serif;min-height:58px}
+.word.in{background:var(--wine);color:#fff}
+.word:disabled{opacity:.25}
+.acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.fb{font-weight:800;font-size:18px;color:var(--mute)}
+.cue{font-size:30px;font-weight:800;color:var(--wine);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dot{display:inline-block;width:26px;height:26px;border-radius:50%;border:2.5px solid var(--wine);vertical-align:middle}
+svg.drop{width:34px;height:44px;display:block}
+.row-l{font-weight:800;color:var(--gold);letter-spacing:.07em;text-transform:uppercase;font-size:14px;margin:16px 0 8px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips .btn{width:auto;min-width:64px;min-height:56px;font-size:21px;padding:6px 14px}
+.build{background:#fff;border:3px solid var(--line);border-radius:26px;padding:18px;margin:18px 0;text-align:center}
+.build .big{font:700 30px Lora,Georgia,serif;color:var(--wine);line-height:1.35}
+.build .big i{font-style:normal;color:#b9a5a8}
+.build .pics{margin-top:8px}
+.can{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:3px solid var(--line);border-radius:20px;padding:14px;margin-bottom:10px;font:700 19px Manrope,sans-serif;color:var(--ink);min-height:64px}
+.can .bx{width:34px;height:34px;border-radius:10px;border:3px solid var(--wine);display:grid;place-items:center;color:#fff;font-weight:800;flex:none}
+.can.on{border-color:var(--ok);background:var(--okbg)}
+.can.on .bx{background:var(--ok);border-color:var(--ok)}
+.hw{background:#FFF6DF;border:3px solid var(--gold);border-radius:22px;padding:16px;font-size:19px;line-height:1.5;margin-top:16px}
+.hw b{color:var(--wine)}
+.sum{text-align:center;margin:18px 0 6px}
+.sum .st{font-size:44px;letter-spacing:4px}
+.sum .tx{font:700 28px Lora,Georgia,serif;color:var(--wine)}
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--cream);border-top:2px solid var(--line);padding:12px 14px;padding-bottom:calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:6}
+.nav>div{max-width:720px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.nav .pg{font-weight:800;color:var(--mute);font-size:19px}
+.nav .go,.nav .ghost{min-width:112px}
+.nav .ghost:disabled{opacity:.4}
+@media(min-width:700px){h2{font-size:32px}.btn{font-size:26px;min-height:72px}.pics{font-size:38px}}
+</style>
+</head>
+<body>
+<div class="top"><span>Lena · Colours and Numbers</span><b id="score">⭐ 0</b></div>
+<div class="wrap" id="app"></div>
+<div class="nav"><div>
+  <button class="ghost" id="back">← Back</button>
+  <span class="pg" id="pg">1 / 7</span>
+  <button class="go" id="next">Next →</button>
+</div></div>
+
+<script>
+(function(){
+var NW=['','one','two','three','four','five','six','seven','eight','nine','ten'];
+var COL=[
+ {w:'red',c:'#C93A3A'},{w:'blue',c:'#3A6EA5'},{w:'green',c:'#3E6F50'},
+ {w:'yellow',c:'#E0B23A'},{w:'orange',c:'#D97A34'},{w:'pink',c:'#D97A9B'}];
+function colOf(w){return COL.filter(function(x){return x.w===w})[0]}
+var got=0,max=0,cur=0;
+
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+function drop(c){return '<svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><path d="M12 2C12 2 3 14 3 21a9 9 0 0 0 18 0C21 14 12 2 12 2z" fill="'+c+'" stroke="#5C1E2E" stroke-width="1.6"/></svg>'}
+function dot(c){return '<span class="dot" style="background:'+c+'"></span>'}
+function rep(s,n){var o='';for(var i=0;i<n;i++)o+=s;return o}
+function shake(b){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}
+function say(t){
+  try{
+    if(!('speechSynthesis' in window))return false;
+    speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.8;
+    var v=(speechSynthesis.getVoices()||[]).filter(function(x){return /^en[-_]US/i.test(x.lang)})[0];
+    if(v)u.voice=v;
+    speechSynthesis.speak(u);return true;
+  }catch(e){return false}
+}
+function award(){got++;upd()}
+function upd(){
+  document.getElementById('score').textContent='⭐ '+got;
+  var s=document.getElementById('sum');
+  if(s){
+    var r=max?got/max:0;
+    s.querySelector('.st').textContent=r>=.85?'⭐⭐⭐⭐⭐':r>=.6?'⭐⭐⭐⭐':r>=.3?'⭐⭐⭐':'⭐⭐';
+    s.querySelector('.tx').textContent=(r>=.85?'Super, Lena! ':r>=.6?'Good job, Lena! ':'Nice try, Lena! ')+got+' / '+max;
+  }
+}
+
+/* ---------- components ---------- */
+function match(body,pairs){
+  var grid=el('div','mgrid'),L=el('div','mcol'),R=el('div','mcol');
+  var status=el('div','status','<span>Tap a word, then tap its match</span><b>0 / '+pairs.length+'</b>');
+  var selId=null,selBtn=null,done=0,miss={},lb={},rb={};
+  shuffle(pairs).forEach(function(p){
+    var b=el('button','btn',p.l);lb[p.id]=b;
+    b.onclick=function(){
+      if(b.disabled)return;
+      if(selBtn)selBtn.classList.remove('sel');
+      selBtn=b;selId=p.id;b.classList.add('sel');say(p.say);
+    };
+    L.appendChild(b);
+  });
+  shuffle(pairs).forEach(function(p){
+    var b=el('button','btn',p.r);rb[p.id]=b;
+    b.onclick=function(){
+      if(b.disabled)return;
+      if(!selId){shake(b);return}
+      if(selId===p.id){
+        lb[p.id].classList.remove('sel');lb[p.id].classList.add('ok');lb[p.id].disabled=true;
+        b.classList.add('ok');b.disabled=true;
+        if(!miss[p.id])award();
+        done++;selId=null;selBtn=null;
+        status.querySelector('b').textContent=done+' / '+pairs.length+(done===pairs.length?' ⭐':'');
+      }else{
+        miss[selId]=true;shake(b);
+        lb[selId].classList.remove('sel');selId=null;selBtn=null;
+      }
+    };
+    R.appendChild(b);
+  });
+  grid.appendChild(L);grid.appendChild(R);body.appendChild(grid);body.appendChild(status);
+}
+
+function choice(body,o){
+  var card=el('div','card');
+  if(o.pics)card.appendChild(el('div','pics',o.pics));
+  if(o.speak){
+    var sp=el('div','spk');
+    var g=el('button','go','🔊 Listen');g.onclick=function(){say(o.speak)};
+    var sh=el('button','link','Show word');
+    var w=el('b','', '');w.style.color='var(--wine)';w.style.fontSize='22px';
+    sh.onclick=function(){w.textContent=o.speak;sh.style.display='none'};
+    sp.appendChild(g);sp.appendChild(sh);sp.appendChild(w);card.appendChild(sp);
+  }
+  if(o.q)card.appendChild(el('div','q',o.q));
+  var box=el('div','opts'+(o.four?' four':''));
+  var missed=false,solved=false,bs=[];
+  o.opts.forEach(function(op){
+    var b=el('button','btn',op.h);bs.push(b);
+    b.onclick=function(){
+      if(solved||b.disabled)return;
+      if(op.v===o.ans){
+        solved=true;b.classList.add('ok');
+        bs.forEach(function(x){if(x!==b){x.disabled=true}});b.disabled=true;
+        if(!missed)award();
+      }else{missed=true;b.classList.add('no');b.disabled=true;shake(b)}
+    };
+    box.appendChild(b);
+  });
+  card.appendChild(box);body.appendChild(card);
+}
+
+function order(body,items){
+  items.forEach(function(it){
+    var card=el('div','card');
+    card.appendChild(el('div','cue',it.cue));
+    var tray=el('div','tray');var pool=el('div','pool');
+    var fb=el('span','fb','');
+    var acts=el('div','acts');
+    var chk=el('button','go','Check'),clr=el('button','ghost','Clear');
+    acts.appendChild(chk);acts.appendChild(clr);acts.appendChild(fb);
+    var picked=[],missed=false,solved=false,words=shuffle(it.words);
+    function draw(){
+      tray.innerHTML='';pool.innerHTML='';
+      if(!picked.length)tray.appendChild(el('span','ph','Tap words below…'));
+      picked.forEach(function(i){
+        var b=el('button','word in',words[i]);
+        b.onclick=function(){if(solved)return;picked.splice(picked.indexOf(i),1);draw()};
+        tray.appendChild(b);
+      });
+      words.forEach(function(w,i){
+        var b=el('button','word',w);b.disabled=picked.indexOf(i)>-1||solved;
+        b.onclick=function(){picked.push(i);fb.textContent='';draw()};
+        pool.appendChild(b);
+      });
+    }
+    chk.onclick=function(){
+      if(solved||!picked.length)return;
+      var s=picked.map(function(i){return words[i]}).join(' ');
+      if(s===it.a){
+        solved=true;tray.classList.add('ok');fb.textContent='✅ Great!';
+        tray.innerHTML='';tray.appendChild(el('b','',it.a+'.'));
+        tray.firstChild.style.cssText='font:700 26px Lora,Georgia,serif;color:#1b6b3c;padding:4px 8px';
+        if(!missed)award();draw();
+      }else{missed=true;shake(tray);fb.textContent='Try again 🙂'}
+    };
+    clr.onclick=function(){if(solved)return;picked=[];fb.textContent='';draw()};
+    card.appendChild(tray);card.appendChild(pool);card.appendChild(acts);
+    body.appendChild(card);draw();
+  });
+}
+
+/* ---------- steps ---------- */
+function plural(n,s){return n===1?s:s+'s'}
+function numDistract(n){
+  var pool=[];for(var i=1;i<=10;i++)if(i!==n&&Math.abs(i-n)<=3)pool.push(i);
+  return shuffle(pool).slice(0,2);
+}
+var STEPS=[
+ {k:'Match',pts:6,t:'Match the colour and the word!',ins:'Hi, Lena! Tap a word on the left. Then tap the matching colour drop on the right.',
+  b:function(body){
+    match(body,COL.map(function(c){return {id:c.w,l:c.w,r:drop(c.c),say:c.w}}));
+  }},
+ {k:'Count',pts:5,t:'Count the things!',ins:'Count the items in each picture and tap the right answer.',
+  b:function(body){
+    [[2,'📚','book'],[4,'🖊️','pen'],[5,'✏️','pencil'],[7,'📏','ruler'],[9,'🎒','bag']].forEach(function(x){
+      var n=x[0],opts=shuffle([n].concat(numDistract(n)));
+      choice(body,{pics:rep(x[1]+' ',n),q:'How many '+plural(2,x[2])+'?',ans:n,
+        opts:opts.map(function(v){return {v:v,h:NW[v]+' '+plural(v,x[2])}})});
+    });
+  }},
+ {k:'Numbers',pts:10,t:'Numbers 1 to 10',ins:'Tap a number. Then tap its word. Two rounds!',
+  b:function(body){
+    [[1,2,3,4,5],[6,7,8,9,10]].forEach(function(r,i){
+      body.appendChild(el('div','row-l','Round '+(i+1)));
+      var holder=el('div','');body.appendChild(holder);
+      match(holder,r.map(function(n){return {id:n,l:String(n),r:NW[n],say:NW[n]}}));
+      if(i===0)holder.style.marginBottom='22px';
+    });
+  }},
+ {k:'Listen',pts:6,t:'Listen and tap!',ins:'Press Listen. Then tap the colour or the number you hear.',
+  b:function(body){
+    ['green','orange','red'].forEach(function(w){
+      var others=shuffle(COL.filter(function(c){return c.w!==w})).slice(0,3);
+      var all=shuffle([colOf(w)].concat(others));
+      choice(body,{speak:w,ans:w,four:true,opts:all.map(function(c){return {v:c.w,h:drop(c.c)}})});
+    });
+    [3,6,10].forEach(function(n){
+      var all=shuffle([n].concat(shuffle([1,2,3,4,5,6,7,8,9,10].filter(function(x){return x!==n})).slice(0,3)));
+      choice(body,{speak:NW[n],ans:n,four:true,opts:all.map(function(v){return {v:v,h:String(v)}})});
+    });
+  }},
+ {k:'Colours',pts:6,t:'What colour is it?',ins:'Look at the picture. Tap the right colour.',
+  b:function(body){
+    [['🍓','strawberry','red'],['🍋','lemon','yellow'],['🥒','cucumber','green'],['🎃','pumpkin','orange'],['🌊','wave','blue'],['🐷','pig','pink']].forEach(function(x){
+      var others=shuffle(COL.filter(function(c){return c.w!==x[2]})).slice(0,2);
+      var all=shuffle([colOf(x[2])].concat(others));
+      choice(body,{pics:x[0],q:'What colour is the '+x[1]+'?',ans:x[2],
+        opts:all.map(function(c){return {v:c.w,h:dot(c.c)+' '+c.w}})});
+    });
+  }},
+ {k:'Word order',pts:4,t:'Colour comes first!',ins:'Remember: the colour comes before the thing! Tap the words in order.',
+  b:function(body){
+    order(body,[
+      {cue:dot('#3E6F50')+' 📏',a:'a green ruler',words:['ruler','a','green']},
+      {cue:dot('#D97A9B')+' ✏️',a:'It is a pink pencil',words:['pencil','It','pink','a','is']},
+      {cue:dot('#C93A3A')+' 📚📚📚',a:'I have three red books',words:['books','I','red','have','three']},
+      {cue:dot('#3A6EA5')+' <span style="font-size:20px">'+rep('🖊️',9)+'</span>',a:'I have nine blue pens',words:['pens','I','blue','have','nine']}
+    ]);
+  }},
+ {k:'My turn',pts:0,t:'Make your own sentence!',ins:'Choose a number, a colour and a thing. Then say your sentence out loud!',
+  b:function(body){
+    var S={n:null,c:null,t:null};
+    var THINGS=[['pen','🖊️'],['book','📚'],['ruler','📏'],['bag','🎒'],['pencil','✏️']];
+    var big=el('div','big'),pics=el('div','pics');
+    var build=el('div','build');build.appendChild(big);build.appendChild(pics);
+    var say1=el('button','go','🔊 Listen');say1.disabled=true;
+    var hint=el('div','fb','');hint.style.marginTop='10px';
+    var ctl=el('div','');
+    function sentence(){return 'I have '+NW[S.n]+' '+S.c+' '+plural(S.n,S.t)+'.'}
+    function ready(){return S.n&&S.c&&S.t}
+    function draw(){
+      big.innerHTML='I have <b>'+(S.n?NW[S.n]:'<i>…</i>')+'</b> <b>'+(S.c||'<i>…</i>')+'</b> <b>'+(S.t?plural(S.n||2,S.t):'<i>…</i>')+'</b>.';
+      big.querySelectorAll('b').forEach(function(b){b.style.fontWeight='700'});
+      var th=THINGS.filter(function(x){return x[0]===S.t})[0];
+      pics.innerHTML=ready()?dot(colOf(S.c).c)+' '+rep(th[1]+' ',S.n):'';
+      say1.disabled=!ready();
+      hint.textContent=ready()?'Now say it out loud! 🎤':'';
+    }
+    function row(label,items,key){
+      ctl.appendChild(el('div','row-l',label));
+      var box=el('div','chips');var bs=[];
+      items.forEach(function(it){
+        var b=el('button','btn',it.h);bs.push(b);
+        b.onclick=function(){S[key]=it.v;bs.forEach(function(x){x.classList.remove('sel')});b.classList.add('sel');if(key==='n'||key==='c'||key==='t')say(typeof it.v==='number'?NW[it.v]:it.v);draw()};
+        box.appendChild(b);
+      });
+      ctl.appendChild(box);
+    }
+    row('1 · How many?',[1,2,3,4,5,6,7,8,9,10].map(function(n){return {v:n,h:n+' <small style="font-size:14px;font-weight:700">'+NW[n]+'</small>'}}),'n');
+    row('2 · Which colour?',COL.map(function(c){return {v:c.w,h:dot(c.c)+' '+c.w}}),'c');
+    row('3 · What thing?',THINGS.map(function(t){return {v:t[0],h:t[1]+' '+t[0]}}),'t');
+    say1.onclick=function(){if(ready())say(sentence())};
+    body.appendChild(build);body.appendChild(ctl);
+    var a=el('div','acts');a.style.marginTop='18px';a.appendChild(say1);body.appendChild(a);body.appendChild(hint);
+    draw();
+
+    body.appendChild(el('div','row-l','Today I can…'));
+    ['say 6 colours','count from 1 to 10','say a sentence with a colour and a number'].forEach(function(t){
+      var c=el('button','can','<span class="bx"></span><span>'+t+'</span>');
+      c.onclick=function(){var on=c.classList.toggle('on');c.querySelector('.bx').textContent=on?'✓':''};
+      body.appendChild(c);
+    });
+    var sum=el('div','sum','<div class="st"></div><div class="tx"></div>');sum.id='sum';body.appendChild(sum);
+    body.appendChild(el('div','hw','<b>Homework.</b> Draw 5 things. Use 5 different colours. Write the number and the colour: <b>“I have four green pencils.”</b> Send a photo to your teacher.'));
+  }}
+];
+
+/* ---------- build ---------- */
+var app=document.getElementById('app'),secs=[];
+STEPS.forEach(function(s,i){
+  max+=s.pts;
+  var sec=el('section','step');
+  sec.innerHTML='<div class="kick">'+s.k+(s.pts?' · '+s.pts+' POINTS':'')+'</div>'
+    +'<div class="hd" style="margin-top:8px"><div class="num">'+(i+1)+'</div><h2>'+s.t+'</h2></div><hr><p class="ins">'+s.ins+'</p>';
+  var body=el('div','');sec.appendChild(body);s.b(body);
+  app.appendChild(sec);secs.push(sec);
+});
+function show(i){
+  cur=Math.max(0,Math.min(STEPS.length-1,i));
+  secs.forEach(function(s,j){s.classList.toggle('on',j===cur)});
+  document.getElementById('pg').textContent=(cur+1)+' / '+STEPS.length;
+  document.getElementById('back').disabled=cur===0;
+  document.getElementById('next').disabled=cur===STEPS.length-1;
+  try{speechSynthesis.cancel()}catch(e){}
+  upd();window.scrollTo(0,0);
+}
+document.getElementById('back').onclick=function(){show(cur-1)};
+document.getElementById('next').onclick=function(){show(cur+1)};
+show(0);
+})();
+</script>
+</body>
+</html>
